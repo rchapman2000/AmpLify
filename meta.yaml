@@ -1,0 +1,29 @@
+package:
+  name:
+  version: 0.0.1
+
+source:
+  git_rev:
+  git_url:
+
+requirements:
+  build:
+ 
+  run:
+    - python
+    - fastqc
+    - bowtie2
+    - bedtools
+    - bzip2
+    - trimmomatic
+    - samtools
+    - bcftools
+    - pyVCF
+    - tqdm
+    - biopython
+    - primerclip
+
+about:
+  home:
+  license:
+  license_file: LISCENSE
