@@ -1,10 +1,10 @@
 package:
-  name:
+  name: ampLify
   version: 0.0.1
 
 source:
-  git_rev:
-  git_url:
+  git_url: https://github.com/rchapman2000/AmpLify.git
+
 
 requirements:
   build:
@@ -24,6 +24,6 @@ requirements:
     - primerclip
 
 about:
-  home:
-  license:
+  home: https://github.com/rchapman2000/AmpLify
+  license: MIT License
   license_file: LISCENSE
