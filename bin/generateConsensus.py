@@ -282,23 +282,23 @@ def calcCovPerc(sample, refPath):
 
 def generateConsensus():
 
-    parser = argparse.ArgumentParser(usage="ampSeq.sh generateConsensus -i DIR -r FILE [options]", \
+    parser = argparse.ArgumentParser(usage="ampLify generateConsensus -i DIR -r FILE [options]", \
                                      description = "Performs variant calling and generates a consensus \
                                                     genome based on alignments.")
     parser.add_argument('-i', '--input', required=True, type=str, help='[Required] - Path to directory with input BAM files', \
              action='store', dest='dir')
     parser.add_argument('-r', '--reference', type=str, required=True, help='[Required] - Path to a reference genome fasta file', action='store', dest='ref')
-    parser.add_argument('-o', '--output', type=str, required=False, help='Name of the directory to send results [Default = results]', \
+    parser.add_argument('-o', '--output', type=str, required=False, help='Name of the directory to send results [Default = \'./results\']', \
         action='store', dest='out')
     parser.add_argument('-t', '--threads', type=int, help='Number of threads available', action='store', dest='threads')
     parser.add_argument('--min-depth', type=int, required=False, \
-        help='Minimum Depth of Coverage for a variant/region to be included in final consensus [Required for GenerateConsensus] [Default = 10]', \
+        help='Minimum Depth of Coverage for a variant/region to be included in final consensus [Default = 10]', \
         action='store', dest='minCov')
     parser.add_argument('--min-qual', type=int, required=False, \
-        help='Minimum Base Quality required for base to be included in variant calling [Required for GenerateConsensus] [Default = 20]', \
+        help='Minimum Base Quality required for base to be included in variant calling [Default = 20]', \
         action='store', dest='minQual')
     parser.add_argument('--percentCutoff', type=float, required=False, \
-        help='Percent abundance threshold of an alternative base to be considered a variant [Required for GenerateConsensus] [Default = 50.00]', \
+        help='Percent abundance threshold of an alternative base to be considered a variant [Default = 50.00]', \
         action='store', dest='minPerc')
 
     currentDir = os.getcwd() + '/'

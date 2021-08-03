@@ -2,8 +2,8 @@
 
 help() {
     echo ""
-    echo " AmpSeq Pipeline"
-    echo "Usage: ampseq <module> [module options]"
+    echo "AmpLify Pipeline"
+    echo "Usage: ampLify <module> [module options]"
     echo ""
     echo "Modules:"
     echo ""
@@ -12,10 +12,10 @@ help() {
     echo "  - generateConsensus"
     echo ""
     echo "To view this message:"
-    echo "  ampseq -h"
+    echo "  ampLify -h"
     echo ""
     echo "To view module help messages:"
-    echo "  ampseq <module> -h"
+    echo "  ampLify <module> -h"
     echo "";}
 
 SCRIPT_DIR=$(dirname ${BASH_SOURCE})

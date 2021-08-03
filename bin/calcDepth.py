@@ -37,13 +37,13 @@ def meanDepth(sample):
 
 def calcDepth():
 
-    parser = argparse.ArgumentParser(usage = "ampSeq calcDepth -i DIR -r FILE [options]", \
+    parser = argparse.ArgumentParser(usage = "ampLify calcDepth -i DIR -r FILE [options]", \
                                      description = "Calculates the maximum and average depth of coverage across samples")
     parser.add_argument('-i', '--input', required=True, type=str, \
         help='[Required] - Path to directory with input BAM files ', \
              action='store', dest='dir')
     parser.add_argument('-r', '--reference', type=str, required=True, help='[Required] - Path to a reference genome fasta file', action='store', dest='ref')
-    parser.add_argument('-o', '--output', type=str, required=False, help='Name of the directory to send results [Default = results]', \
+    parser.add_argument('-o', '--output', type=str, required=False, help='Name of the directory to send results [Default = \'./results\']', \
         action='store', dest='out')
     #parser.add_argument('-t', '--threads', type=int, help='Number of threads available', action='store', dest='threads')
 

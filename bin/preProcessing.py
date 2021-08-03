@@ -172,25 +172,24 @@ def clipPrimers(threads, sample, masterFile):
 
 def PreProcessing():
     
-    parser = argparse.ArgumentParser(usage="ampSeq.sh preProcess -i DIR -r FILE -m FILE [options]", \
+    parser = argparse.ArgumentParser(usage="ampLify preProcess -i DIR -r FILE -m FILE [options]", \
                                      description = "Performs Quality Control and Adapter Trimming, aligns reads \
                                          to provided reference,and clips amplicon sequencing primers.")
     parser.add_argument('-i', '--input', required=True, type=str, \
         help='[Required] - Path to directory with input fastq files', \
              action='store', dest='dir')
     parser.add_argument('-r', '--reference', type=str, required=True, help='[Required] - Path to a reference genome fasta file', action='store', dest='ref')
-    parser.add_argument('-m', '--master-file', required=True, type=str, help='[Required] Path to swift primer masterfile [Required for PreProcessing', \
+    parser.add_argument('-m', '--master-file', required=True, type=str, help='[Required] Path to swift primer masterfile', \
         action='store', dest='master')
-    parser.add_argument('-o', '--output', type=str, required=False, help='Name of the directory to send results [Default = results]', \
+    parser.add_argument('-o', '--output', type=str, required=False, help='Name of the directory to send results [Default = \'./results\']', \
         action='store', dest='out')
     parser.add_argument('-t', '--threads', type=int, help='Number of threads available', action='store', dest='threads')
-    #parser.add_argument('--pre-process', help='Runs the PreProcessing Module', action='store_true', dest='preProc')
 
     parser.add_argument('--head-crop', type=int, required=False, \
-        help='Number of bases to trim off the front of reads [Default = 0] (Suggested to run the pipeline or FASTQ prior to setting this option)', \
+        help='Number of bases to trim off the front of reads [Default = 0] (Suggested to run the pipeline or FASTQC prior to setting this option)', \
         action='store', dest='hCrop')
     parser.add_argument('--end-crop', type=int, required=False, \
-        help='Number of bases to trim off the end of reads [Default = 0] (Suggested to run the pipeline or FASTQ prior to setting this option)', \
+        help='Number of bases to trim off the end of reads [Default = 0] (Suggested to run the pipeline or FASTQC prior to setting this option)', \
         action = 'store', dest = 'eCrop')
 
     currentDir = os.getcwd() + '/'
