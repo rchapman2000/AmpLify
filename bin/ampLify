@@ -22,11 +22,11 @@ SCRIPT_DIR=$(dirname ${BASH_SOURCE})
 
 if [ "$1" = preProcess ]; then
     echo $( dirname ${BASH_SOURCE})
-    "$SCRIPT_DIR"/ampLify-modules/preProcessing.py ${@:2}
+    python "$SCRIPT_DIR"/ampLify-modules/preProcessing.py ${@:2}
 elif [ "$1" = calcDepth ]; then
-    "$SCRIPT_DIR"/ampLify-modules/calcDepth.py ${@:2}
+    python "$SCRIPT_DIR"/ampLify-modules/calcDepth.py ${@:2}
 elif [ "$1" = generateConsensus ]; then
-    "$SCRIPT_DIR"/ampLify-modules/generateConsensus.py ${@:2}
+    python "$SCRIPT_DIR"/ampLify-modules/generateConsensus.py ${@:2}
 elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     help
 else 
