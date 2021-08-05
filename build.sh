@@ -1,4 +1,2 @@
-mkdir $PREFIX/bin/ampLify-src
-cp bin/* $PREFIX/bin/ampLify-src
-
-ln -s $PREFIX/bin/ampLify-src/ampLify $PREFIX/bin/ampLify
+mkdir -p $PREFIX/bin
+cp bin/* $PREFIX/bin/

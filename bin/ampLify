@@ -22,11 +22,11 @@ SCRIPT_DIR=$(dirname ${BASH_SOURCE})
 
 if [ "$1" = preProcess ]; then
     echo $( dirname ${BASH_SOURCE})
-    python3 "$SCRIPT_DIR"/preProcessing.py ${@:2}
+    python3 "$SCRIPT_DIR"/modules/preProcessing.py ${@:2}
 elif [ "$1" = calcDepth ]; then
-    python3 "$SCRIPT_DIR"/calcDepth.py ${@:2}
+    python3 "$SCRIPT_DIR"/modules/calcDepth.py ${@:2}
 elif [ "$1" = generateConsensus ]; then
-    python3 "$SCRIPT_DIR"/generateConsensus.py ${@:2}
+    python3 "$SCRIPT_DIR"/modules/generateConsensus.py ${@:2}
 elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     help
 else 
