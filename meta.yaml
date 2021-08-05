@@ -10,7 +10,6 @@ requirements:
   build:
  
   run:
-    - python
     - fastqc
     - bowtie2
     - bedtools
