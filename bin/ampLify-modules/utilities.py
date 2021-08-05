@@ -49,6 +49,9 @@ def parseCommonOptions(args):
         inDir = args.dir
     else:
         inDir = os.getcwd() + '/' + args.dir
+
+    if inDir[-1] != '/':
+        inDir = inDir + '/'
     
     print("Directory = ", inDir)
     
