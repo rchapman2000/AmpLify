@@ -150,3 +150,44 @@ The pre-process and generate consensus modules can be strung together in bash to
 ```
 ampLify preProcess -i FILE -r REFERENCE -m MASTERFILE -o OUTDIR/preProcess && ampLify generateConsensus -i 
 ```
+
+## Citating AmpLify:
+If you have used ampLify in your reserach, please include a citation in your work:
+
+Authors: Ryan C. Chapman, Michael R. Wiley
+
+Date: August, 2021
+
+Url: https://github.com/rchapman2000/AmpLify
+
+Institution: Univeristy of Nebraska Medical Center
+
+
+Please also include citations for following dependencies of ampLify:
+
+- bcftools & samtools - https://academic.oup.com/gigascience/article/10/2/giab008/6137722
+- bedtools - https://academic.oup.com/bioinformatics/article/26/6/841/244688
+- biopython - dx.doi.org/10.1093/bioinformatics/btp163
+- bowtie2 - https://www.nature.com/articles/nmeth.1923
+- fastqc - https://github.com/s-andrews/FastQC
+- pyVCF - https://github.com/jamescasbon/PyVCF
+- trimmomatic - https://academic.oup.com/bioinformatics/article/30/15/2114/2390096
+- tqdm - https://zenodo.org/record/5149124#.YQwftDpOlpg
+
+## Citations:
+
+Andrews, S. (2010). FASTQC. https://github.com/s-andrews/FastQC
+
+Bolger, A. M., Lohse, M., &amp; Usadel, B. (2014). Trimmomatic: A FLEXIBLE trimmer FOR Illumina sequence data. Bioinformatics, 30(15), 2114–2120. https://doi.org/10.1093/bioinformatics/btu170 
+
+Casbon J. (2012). PyVCF. https://github.com/jamescasbon/PyVCF
+
+Casper da Costa-Luis, Stephen Karl Larroque, Kyle Altendorf, Hadrien Mary, richardsheridan, Mikhail Korobov, Noam Yorav-Raphael, Ivan Ivanov, Marcel Bargull, Nishant Rodrigues, Guangshuo CHEN, Antony Lee, Charles Newey, James, Joshua Coales, Martin Zugnoni, Matthew D. Pagel, mjstevens777, Mikhail Dektyarev, … Nikolay Nechaev. (2021). tqdm: A fast, Extensible Progress Bar for Python and CLI (v4.62.0). Zenodo. https://doi.org/10.5281/zenodo.5149124
+
+Cock, P. J., Antao, T., Chang, J. T., Chapman, B. A., Cox, C. J., Dalke, A., Friedberg, I., Hamelryck, T., Kauff, F., Wilczynski, B., &amp; de Hoon, M. J. (2009). Biopython: Freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics, 25(11), 1422–1423. https://doi.org/10.1093/bioinformatics/btp163 
+
+Danecek, P., Bonfield, J. K., Liddle, J., Marshall, J., Ohan, V., Pollard, M. O., Whitwham, A., Keane, T., McCarthy, S. A., Davies, R. M., &amp; Li, H. (2021). Twelve years of samtools and BCFtools. GigaScience, 10(2). https://doi.org/10.1093/gigascience/giab008 
+
+Langmead, B., &amp; Salzberg, S. L. (2012). Fast gapped-read alignment with Bowtie 2. Nature Methods, 9(4), 357–359. https://doi.org/10.1038/nmeth.1923 
+
+Quinlan, A. R., &amp; Hall, I. M. (2010). BEDTools: A Flexible suite of utilities for comparing Genomic features. Bioinformatics, 26(6), 841–842. https://doi.org/10.1093/bioinformatics/btq033 
