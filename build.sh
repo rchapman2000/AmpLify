@@ -1,1 +1,1 @@
-cp -r bin/ $PREFIX/
+cp bin/* $PREFIX/bin/
