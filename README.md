@@ -153,15 +153,10 @@ ampLify preProcess -i FILE -r REFERENCE -m MASTERFILE -o OUTDIR/preProcess && am
 
 ## Citating AmpLify:
 If you have used ampLify in your reserach, please include a citation in your work:
-
-Authors: Ryan C. Chapman, Michael R. Wiley
-
-Date: August, 2021
-
-Url: https://github.com/rchapman2000/AmpLify
-
-Institution: Univeristy of Nebraska Medical Center
-
+- Authors: Ryan C. Chapman, Michael R. Wiley
+- Date: August, 2021
+- Url: https://github.com/rchapman2000/AmpLify
+- Institution: Univeristy of Nebraska Medical Center
 
 Please also include citations for following dependencies of ampLify:
 
