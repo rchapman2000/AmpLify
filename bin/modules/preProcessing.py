@@ -1,3 +1,4 @@
+#!/usr/bin/env conda
 import argparse
 import os
 import re
