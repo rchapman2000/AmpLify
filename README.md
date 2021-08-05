@@ -2,7 +2,11 @@
 The purpose of ampLify is to automate the process of assembling a consensus genome from amplicon sequencing reads while providing users control into how their consensus is generated. Existing tools are built specifically for certain amplicon panels. While ampLify has been built with SWIFT Biosciences products in mind, it could be adapted for other types of amplicon sequencing. Additionally, other tools have been "black-box" where coverage and base-quality cutoff have been determined by the developer. AmpLify allows users to specify cutoff parameters which can help tailor the results based on the quality of their sequences.
 
 ## Installation
-To be Added
+AmpLify can be installed using conda:
+```
+conda create -n ampLify-env
+conda install -c rchapman2000 amplify
+```
 
 ## Usage and Description
 ampLify consists of three modules which can be viewed by entering:
