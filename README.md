@@ -144,3 +144,9 @@ ampLify generateConsensus -i DIR -r FILE [options]
 | --percentCutoff | Minimum Percent abundance of a variant for it to be applied as opposed to the reference [Default = 50.00] |
 | -h | Displays usage instructions |
 
+## Useful Tips
+### Automating
+The pre-process and generate consensus modules can be strung together in bash to create a singular pipeline:
+```
+ampLify preProcess -i FILE -r REFERENCE -m MASTERFILE -o OUTDIR/preProcess && ampLify generateConsensus -i 
+```
