@@ -1,6 +1,6 @@
 package:
   name: amplify
-  version: 0.0.1
+  version: 0.0.2
 
 source:
   git_url: https://github.com/rchapman2000/AmpLify.git
