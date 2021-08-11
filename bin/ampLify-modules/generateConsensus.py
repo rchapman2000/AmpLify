@@ -39,7 +39,7 @@ def createVarStats(threads, inDir, sample, ref, minCov, minQual, minPerc):
     statFile.write('Chromosome\tPosition\tRef-Base\tAlt-base\tRef-base-count-no-quality-filtering\tAlt-base-count-no-quality-filtering\tAlt-base-percent-no-quality-filtering\tRef-base-count-post-filtering\tAlt-base-count-post-filtering\tAlt-base-percent-post-filtering\n')
     
     # Creats a pileup with no base-quality filtering
-    process = runCommand("bcftools mpileup --threads {0} -Q 0 --count-orphans --no-BAQ --annotate 'Format/AD,FORMAT/DP,FORMAT/SP,INFO/AD' --max-depth 100000 -O b -f {1} {2} > {3}".format( \
+    process = runCommand("bcftools mpileup --threads {0} -Q 0 --count-orphans --no-BAQ --annotate 'Format/AD,FORMAT/DP,FORMAT/SP,INFO/AD' --max-depth 100000 --max-idepth 100000 -O b -f {1} {2} > {3}".format( \
         threads, ref, inDir + sample + '.bam', sample + '-no-base-qual-pileup.bcf'))
     # Creats a VCF from the unfiltered pileup
     process = runCommand('bcftools call --threads {0} -A -m -v -Ov -o {1} {2}'.format(threads, sample + '-no-base-qual.vcf', sample + '-no-base-qual-pileup.bcf'))
@@ -95,10 +95,11 @@ def createVarStats(threads, inDir, sample, ref, minCov, minQual, minPerc):
 # minCov - the coverage cutoff for an alternative base to be considered a variant
 # minPerc - the percent abundance cutoff for an alternative base to be considered a variant
 # minQual - the base-quality cutoff to be considered in the variant calculations
+# indelGap - the minimum number of bases required between two indels for both to be included.
 #
 # Returns:
 # The number of Variants applied to the sample
-def callVariants(threads, inDir, sample, ref, minCov, minQual, minPerc):
+def callVariants(threads, inDir, sample, ref, minCov, minQual, minPerc, indelGap):
 
     # Indexes the sorted bam file
     process = runCommand('samtools index -@ {0} {1}'.format(threads, inDir + sample + '.bam'))
@@ -108,11 +109,11 @@ def callVariants(threads, inDir, sample, ref, minCov, minQual, minPerc):
     # --count-orphas and --no-BAW options are provided to ensure that no base score
     # recalibration occurs and no unstranded alignments are excluded. The --max-depth
     # parameter ensures that all reads are used at each site (bcftools defaultly
-    # considers 250 reads per position max). Finally, the AD option in included in the
+    # considers 250 reads per position max). The --max-idepth parameter ensures that Finally, the AD option in included in the
     # annotate to grab allele (base) counts after filtering (DP does not appear to 
     # take into account bases filtered by the quality filter).
     process = runCommand("bcftools mpileup --threads {0} -Q {1} --count-orphans --no-BAQ --annotate 'Format/AD,FORMAT/DP,FORMAT/SP,INFO/AD' \
-                         --max-depth 100000 -O b -f {2} {3} > {4}" \
+                         --max-depth 100000 --max-idepth 100000 -O b -f {2} {3} > {4}" \
                          .format(threads, minQual, ref, inDir + sample + '.bam', sample + '-pileup.bcf'))
 
     # The pileup is converted to a vcf file. The -v option
@@ -123,21 +124,34 @@ def callVariants(threads, inDir, sample, ref, minCov, minQual, minPerc):
 
     # The variants in the called vcf are filtered based on depth of coverage (AD[0] + AD[1])
     # as well as whether the alternative allele is present at a percentage
-    # higher than the specified minimum percentage threshold.
-    process = runCommand("bcftools filter --threads {0} -i '(INFO/AD[0]+INFO/AD[1])>={1} && (INFO/AD[1] / (INFO/AD[0] + INFO/AD[1])) > {2}' {3} > {4}" \
-                         .format(threads, minCov, minPerc/100.00, sample + '.vcf', sample + '-filtered.vcf'))
+    # higher than the specified minimum percentage threshold. Indels are filtered based on whether they are 
+    # greater than certain number of nucleotides (the indelGap) away from each other
+    process = runCommand("bcftools filter --threads {0} -G {1} -i '(INFO/AD[0]+INFO/AD[1])>={2} && (INFO/AD[1] / (INFO/AD[0] + INFO/AD[1])) > {3}' {4} > {5}" \
+                         .format(threads, indelGap, minCov, minPerc/100.00, sample + '.vcf', sample + '-filtered.vcf')) 
 
-    # Zips and indexes the filtered vcf file
+    # Filters for snps and deltions that pass the filters and zips/indexes this file
+    process = runCommand("bcftools filter --threads {0} -i '(strlen(REF)>=strlen(ALT))' {3} > {4}" \
+                         .format(threads, minCov, minPerc/100.00, sample + '-filtered.vcf', sample + '-filtered-snpdels.vcf'))
+    process = runCommand('bgzip {0}'.format(sample + '-filtered-snpdels.vcf'))
+    process = runCommand('tabix {0}'.format(sample + '-filtered-snpdels.vcf.gz'))
+
+    # Filters for insertions that pass the filters and zips/indexes this file
+    process = runCommand("bcftools filter --threads {0} -i '(strlen(REF)<strlen(ALT[0]))' {3} > {4}" \
+                         .format(threads, minCov, minPerc/100.00, sample + '-filtered.vcf', sample + '-filtered-ins.vcf'))
+    process = runCommand('bgzip {0}'.format(sample + '-filtered-ins.vcf'))
+    process = runCommand('tabix {0}'.format(sample + '-filtered-ins.vcf.gz'))
+
+    # Zips and indexes the filtered vcf file with all variants
     process = runCommand('bgzip {0}'.format(sample + '-filtered.vcf'))
     process = runCommand('tabix {0}'.format(sample + '-filtered.vcf.gz'))
 
     # Calls the create variant/filtering satistics method 
-    createVarStats(threads, inDir, sample, ref, minCov, minQual, minPerc)    
+    createVarStats(threads, inDir, sample, ref, minCov, minQual, minPerc)  
 
     # Creates a stats file for the filtered vcf file which will be
     # used to calculate the number of variants in this sample.
     process = runCommand('bcftools stats {0} > {1}'.format(sample + '-filtered.vcf.gz', sample + '-vcf-stats.txt'))
-    
+
     # Opens the vcf stats file, and looks for the line  
     # containing "numbe rof records". The number of variants 
     # is extracted from this line via regex
@@ -193,22 +207,24 @@ def findMaskCoordinates(threads, sample, ref, refName, minCov):
     
     
     # Parses the VCF and creates a BED file for every position with a coverage (based on the sum of the AD)
-    # that fits the minimum coverage threshold. This bed will be interested with the reference positions,
+    # that fits the minimum coverage threshold or is a deletion. This bed will be interested with the reference positions,
     # and any position that is not found in the intersection is either not found in the alignment or
-    # falls below the coverage threshold. Thus, these sites should be masked.
+    # is not part of a deletion and falls below the coverage threshold. Thus, these sites should be masked.
     reader = vcf.Reader(open(sample + '-all.vcf', 'r'))
     bedOut = open(sample + "-noMask.bed", 'w+')
+    varConsensus = SeqIO.to_dict(SeqIO.parse(sample+"-unmasked-snpdels.fasta", "fasta"))
 
     # Loops over every record in the vcf file and grabs only those that 
-    # fit the minimum coverage threshold
+    # fit the minimum coverage threshold or are deletions
     for record in reader:
-        if (sum(record.INFO['AD']) >= minCov):
+        # If the site fits the minimum coverage or is an insertion, it should not be masked.
+        if (sum(record.INFO['AD']) >= minCov or varConsensus[record.CHROM][record.POS - 1] == '-'):
             # Bed is in format CHR, START_POS, END_POS
             bedOut.write("{0}\t{1}\t{2}\n".format(record.CHROM, record.POS - 1, record.POS)) 
     bedOut.close()
 
     # Uses bedtools intersect to find the positions present in the reference that are not found in the 
-    # file containing positions that meet minimum coverage threshold.
+    # file containing positions that meet minimum coverage threshold or are part of insertions.
     process = runCommand('bedtools intersect -a {0} -b {1} -v > {2}'.format(refName + '-positions.bed', sample + '-noMask.bed', sample + '-mask.bed'))
 
     return (sample + "-mask.bed")
@@ -230,12 +246,15 @@ def findMaskCoordinates(threads, sample, ref, refName, minCov):
 def makeConsensus(threads, sample, ref, refName, minCov):
 
     # Applies the variants to the reference
-    process = runCommand('bcftools consensus -o {0} -f {1} {2}'.format(sample + '-unmasked.fasta', ref, sample + '-filtered.vcf.gz'))
+    process = runCommand('bcftools consensus -o {0} --mark-del - -f {1} {2}'.format(sample + '-unmasked-snpdels.fasta', ref, sample + '-filtered-snpdels.vcf.gz'))
 
     maskBed = findMaskCoordinates(threads, sample, ref, refName, minCov)
 
     # Masks the fasta using the bed file of low coverage spots created previously.
-    process = runCommand('bedtools maskfasta -fi {0} -bed {1} -fo {2}'.format(sample + '-unmasked.fasta', maskBed, sample + '-masked-consensus.fasta'))
+    process = runCommand('bedtools maskfasta -fi {0} -bed {1} -fo {2}'.format(sample + '-unmasked-snpdels.fasta', maskBed, sample + '-masked-snpdels.fasta'))
+
+    # Incorporates the threshold passing insertions into the masked consensus
+    process = runCommand('bcftools consensus -o {0} -f {1} {2}'.format(sample + '-masked-consensus.fasta', sample + '-masked-snpdels.fasta', sample + '-filtered-ins.vcf.gz'))
 
     # Unwraps the fasta to be all on one line.
     process = runCommand("awk '{{if(NR==1) print \">{0}\"; else printf(\"%s\", $0); next}}' {1} > {2}".format(sample, sample + '-masked-consensus.fasta', sample + '-final.fasta'))
@@ -300,6 +319,9 @@ def generateConsensus():
     parser.add_argument('--percentCutoff', type=float, required=False, \
         help='Percent abundance threshold of an alternative base to be considered a variant [Default = 50.00]', \
         action='store', dest='minPerc')
+    parser.add_argument('--indel-gap', type=int, required=False, \
+        help='Minimum distance between two indels required for them to both be included. Below this threshold, one of the indels will be filtered out [Default = 10]', \
+        action='store', dest='indGap')
 
     currentDir = os.getcwd() + '/'
 
@@ -341,6 +363,13 @@ def generateConsensus():
             sys.exit("{0} is not a valid percentage".format(args.minPerc))
         else: 
             minPerc = args.minPerc
+
+    indelGap = 10
+    if (args.indGap):
+        if (args.indGap < 0):
+            sys.exit("{0} is not a valid number of bases (must be positive)".format(args.indGap))
+        else: 
+            indelGap = args.indGap
 
     resultsDir = currentDir + outName + '/'
     workingDir = resultsDir + 'Working' + '/'
@@ -386,7 +415,7 @@ def generateConsensus():
             # Runs the variant calling step, appends the variant count to the statistics list,
             # and moves the sample variant statistics file to the results directory
             pbar.write('Calling Variants - Minimum Coverage Cutoff: {1} Minimum Quality Cutoff: {2} Minimum Alt Percent Cutoff: {3}'.format(sample, minCov, minQual, minPerc))
-            varCount = callVariants(threads, inDir, sample, refPath, minCov, minQual, minPerc)
+            varCount = callVariants(threads, inDir, sample, refPath, minCov, minQual, minPerc, indelGap)
             sampleStats.append(str(varCount))
             runCommand('mv {0} {1}'.format(sample + '-varStats.tsv', resultsDir))
         

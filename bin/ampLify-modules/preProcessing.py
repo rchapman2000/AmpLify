@@ -130,7 +130,7 @@ def alignReads(threads, sample, idxDir, refName):
 
     # Aligns the trimmed reads to the reference genome using bowtie2.
     # Alignment is local to ensure that no gaps are created in the reads
-    process=runCommand('bowtie2 -p {0} -x {1} -1 {2} -2 {3} --local -S {4}'.format(threads, idxDir + "idx", reads1, reads2, sample + '-align.sam'))
+    process=runCommand('bowtie2 -p {0} --local --very-fast-local --no-mixed --no-discordant -x {1} -1 {2} -2 {3} -S {4}'.format(threads, idxDir + "idx", reads1, reads2, sample + '-align.sam'))
  
     # Bowtie2 writes to the stderr. Grabs the alignment percentage 
     # from the bowtie2 output message 
