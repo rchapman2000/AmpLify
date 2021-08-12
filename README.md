@@ -39,7 +39,7 @@ See the [Trimmomatic manual](http://www.usadellab.org/cms/uploads/supplementary/
 
 **Alignment:**
 
-AmpLify performs local alignment to the provided reference using [Bowtie2](https://github.com/BenLangmead/bowtie2)
+AmpLify performs local alignment to the provided reference using [Bowtie2](https://github.com/BenLangmead/bowtie2). Bowtie2's inherent --very-fast-local alignment scoring is used to ensure that indels are still allowed despite local alignemtn being used. When we tested the pipeline using a gapped alignment strategy rather than local, chimeric and singleton reads were found to be aligned in several locations, skewing the consensus. Additionally, AmpLify does not allow for disconcordant or singleton alignments to be included to help reduce the presence of false positive alignments.
 
 **PrimerClip:**
 
@@ -107,13 +107,15 @@ ampLify calcDepth -i DIR -r FILE [options]
 ### Generate Consensus
 AmpLify takes in a directory of clipped .bam alignment files, performs variant calling, applies these variants to the reference, and masks the reference to reflect the areas that were sequenced with sufficient coverage.
 
-**Variant Calling:**
+**Variant Calling and Masking:**
 
-AmpLify uses a [bcftools](http://samtools.github.io/bcftools/bcftools.html) and [pyVCF](https://pyvcf.readthedocs.io/en/latest/) to call/parse variants. First, a pileup is generated based on the bam file with all bases above the minimum base quality threshold. Then, the entries with variants are filtered to remove any entries where the depth is below the minimum coverage threshold and where the percent abundance of the alternative allele is below the minimum percentage cutoff. Finally, these variants are applied to the consensus using [bedtools](https://bedtools.readthedocs.io/en/latest/).
+AmpLify uses a [bcftools](http://samtools.github.io/bcftools/bcftools.html) and [pyVCF](https://pyvcf.readthedocs.io/en/latest/) to call/parse variants. First, a pileup is generated based on the bam file with all bases above the minimum base quality threshold. Then, the entries with variants are filtered to remove any entries where the depth is below the minimum coverage threshold and where the percent abundance of the alternative allele is below the minimum percentage cutoff. 
 
-**Masking:**
+Next, AmpLify separates out the SNPs and Deletions from the insertions. the SNPs and deletions are then applied to the reference maintaining a '-' for any deletion. Our reason for doing this is that when bcftools reports nucleotides, the position is not relative to the deletion. Thus, this would affect what positions are masked given our masking strategy.
 
 To determine what positions to mask, AmpLify utilizes the pileup generated during variant calling with positions above the minimum base quality threshold. Then, every position in the pileup that fits the depth of coverage threshold (after filtering low-quality bases) is written to a bed file. This bed file is compared to a bed file containing every nucleotide in the reference genome using [bedtools](https://bedtools.readthedocs.io/en/latest/). Positions that are found in the reference genome and not in the alignment positions are then placed into a new bed file to be masked. These positions are then applied to the consensus using [bedtools](https://bedtools.readthedocs.io/en/latest/).
+
+Finally, these insertions that pass the thresholds are applied to the consensus.
 
 **Output:**
 The output directory will contain consensus fasta files for each sample as well as Variant calling statistics for each sample. The variant calling statistics will contain various metrics to view whether the variant calling is performing as you would like. It is a tsv with the format:
@@ -142,6 +144,7 @@ ampLify generateConsensus -i DIR -r FILE [options]
 | --min-depth | Minimum depth of coverage for a variant/region to be included in the final consensus [Default = 10] |
 | --min-qual | Minimum base quality required for a base to be included in the coverage at that position [Default = 20 ] |
 | --percentCutoff | Minimum Percent abundance of a variant for it to be applied as opposed to the reference [Default = 50.00] |
+| --indel-gap | Minimum distance between two indels required for them to both be included. Below this threshold, one of the indels will be filtered out [Default = 10] |
 | -h | Displays usage instructions |
 
 ## Useful Tips
