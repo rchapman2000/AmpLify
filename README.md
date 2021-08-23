@@ -146,7 +146,7 @@ ampLify generateConsensus -i DIR -r FILE [options]
 | --min-depth | Minimum depth of coverage for a variant/region to be included in the final consensus [Default = 10] |
 | --min-qual | Minimum base quality required for a base to be included in the coverage at that position [Default = 20 ] |
 | --percentCutoff | Minimum Percent abundance of a variant for it to be applied as opposed to the reference [Default = 50.00] |
-| --indel-gap | Minimum distance between two indels required for them to both be included. Below this threshold, one of the indels will be filtered out [Default = 0] |
+| --indel-gap | Minimum distance between two indels required for them to both be included. Below this threshold, one of the indels will be filtered out [Default = 10] |
 | -h | Displays usage instructions |
 
 ## Useful Tips
