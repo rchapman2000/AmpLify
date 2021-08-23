@@ -5,10 +5,12 @@ package:
 source:
   git_url: https://github.com/rchapman2000/AmpLify.git
 
+build:
+  noarch: generic
+  number: 0
 
 requirements:
-  build:
- 
+  build: []
   run:
     - fastqc
     - bowtie2
